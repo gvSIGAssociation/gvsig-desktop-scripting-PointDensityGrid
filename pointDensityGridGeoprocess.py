@@ -21,6 +21,8 @@ from addons.PointDensityGrid.pointDensityGrid import GRID_HEXAGON_HORIZONTAL,GRI
 from org.gvsig.andami import PluginsLocator
 import os
 from java.io import File
+from org.gvsig.tools import ToolsLocator
+
 class PointDensityGridGeoprocess(ToolboxProcess):
   def getHelpFile(self):
     name = "pointdensitygrid"
@@ -44,18 +46,19 @@ class PointDensityGridGeoprocess(ToolboxProcess):
         return File(helpPath)
     return None
   def defineCharacteristics(self):
-      self.setName("_Point_density_grid_geoprocess_name")
-      self.setGroup("_Criminology_group")
+      i18nManager = ToolsLocator.getI18nManager()
+      self.setName(i18nManager.getTranslation("_Point_density_grid_geoprocess_name"))
+      self.setGroup(i18nManager.getTranslation("_Criminology_group"))
       self.setUserCanDefineAnalysisExtent(False)
       params = self.getParameters()
-      params.addInputVectorLayer("LAYER","_Input_layer", SHAPE_TYPE_POINT, True)
-      params.addNumericalValue("DISTANCEGRID", "_Grid_distance",0, NUMERICAL_VALUE_DOUBLE)
-      params.addSelection("GRIDTYPE", "_Grid_type", 
+      params.addInputVectorLayer("LAYER",i18nManager.getTranslation("_Input_layer"), SHAPE_TYPE_POINT, True)
+      params.addNumericalValue("DISTANCEGRID", i18nManager.getTranslation("_Grid_distance"),0, NUMERICAL_VALUE_DOUBLE)
+      params.addSelection("GRIDTYPE", i18nManager.getTranslation("_Grid_type"), 
                           [GRID_HEXAGON_HORIZONTAL, 
                            GRID_HEXAGON_VERTICAL,
                            GRID_SQUARE]);
-      params.addBoolean("ADDEMPTYGRID", "_Add_empty_grids", True)
-      params.addString("EXPRESSION", "_Value_expression")
+      params.addBoolean("ADDEMPTYGRID", i18nManager.getTranslation("_Add_empty_grids"), True)
+      params.addString("EXPRESSION", i18nManager.getTranslation("_Value_expression"))
       self.addOutputVectorLayer("RESULT_POLYGON", "DensityGrid", SHAPE_TYPE_POLYGON)
       
   def processAlgorithm(self):
