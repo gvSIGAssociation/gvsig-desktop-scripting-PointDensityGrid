@@ -18,8 +18,31 @@ from addons.PointDensityGrid.pdglib.hexa_grid import pointDensityGrid_hexa
 from addons.PointDensityGrid.pdglib.square_grid import pointDensityGrid_square
 from addons.PointDensityGrid.pointDensityGrid import pointDensityGridCreation
 from addons.PointDensityGrid.pointDensityGrid import GRID_HEXAGON_HORIZONTAL,GRID_HEXAGON_VERTICAL,GRID_SQUARE
-
+from org.gvsig.andami import PluginsLocator
+import os
+from java.io import File
 class PointDensityGridGeoprocess(ToolboxProcess):
+  def getHelpFile(self):
+    name = "pointdensitygrid"
+    extension = ".xml"
+    locale = PluginsLocator.getLocaleManager().getCurrentLocale()
+    tag = locale.getLanguage()
+    #extension = ".properties"
+
+    helpPath = gvsig.getResource(__file__, "help", name + "_" + tag + extension)
+    if os.path.exists(helpPath):
+        return File(helpPath)
+    #Alternatives
+    alternatives = PluginsLocator.getLocaleManager().getLocaleAlternatives(locale)
+    for alt in alternatives:
+        helpPath = gvsig.getResource(__file__, "help", name + "_" + alt.toLanguageTag() + extension )
+        if os.path.exists(helpPath):
+            return File(helpPath)
+    # More Alternatives
+    helpPath = gvsig.getResource(__file__, "help", name + extension)
+    if os.path.exists(helpPath):
+        return File(helpPath)
+    return None
   def defineCharacteristics(self):
       self.setName("_Point_density_grid_geoprocess_name")
       self.setGroup("_Criminology_group")
