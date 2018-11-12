@@ -9,10 +9,10 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
   deltaY=lado*0.0000001
 
   if store.getSelection().getSize()==0:
-    featuresLayer = store.getFeatures()
+    featuresLayer = store.getFeatureSet()
   else:
     featuresLayer = store.getSelection()
-
+  totalSize = float(featuresLayer.getSize())
   envelope=store.getEnvelope()
   infX = envelope.getLowerCorner().getX()-deltaX
   infY = envelope.getLowerCorner().getY()-deltaY
@@ -26,6 +26,7 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
   n = 0
   sef = SpatialEvaluatorsFactory.getInstance()
   fq = store.createFeatureQuery()
+
   if rotate: #
     increY = lado*0.5
     increX = (pow((pow(lado,2)-pow(lado*0.5,2)),0.5))
@@ -70,7 +71,9 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
         newFeature = output.createNewFeature()
         newFeature["ID"]=id_
         newFeature["GEOMETRY"]=hexa
+        newFeature["TOTAL"]=totalSize
         newFeature["COUNT"]=count
+        newFeature["PERC"]=(count/totalSize)*100
 
         output.insert(newFeature)
         id_+=1
@@ -128,6 +131,8 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
               newFeature = output.createNewFeature()
               newFeature["ID"]=id_
               newFeature["GEOMETRY"]=hexa
+              newFeature["TOTAL"]=totalSize
               newFeature["COUNT"]=count
+              newFeature["PERC"]=(count/totalSize)*100
               output.insert(newFeature)
               id_+=1

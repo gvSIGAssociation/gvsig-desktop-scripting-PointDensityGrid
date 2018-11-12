@@ -1,4 +1,7 @@
 # encoding: utf-8
+from gvsig.uselib import use_plugin
+use_plugin("org.gvsig.toolbox")
+use_plugin("org.gvsig.geoprocess.app.mainplugin")
 
 import gvsig
 import pdb

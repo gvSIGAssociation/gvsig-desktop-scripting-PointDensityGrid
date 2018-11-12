@@ -8,13 +8,11 @@ def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection
   deltaX=lado*0.2
   deltaY=lado*0.2
 
-
   if store.getSelection().getSize()==0:
-    featuresLayer = store.getFeatures()
+    featuresLayer = store.getFeatureSet()
   else:
     featuresLayer = store.getSelection()
-    print "SELECTION", featuresLayer, type(featuresLayer)
-
+  totalSize = float(featuresLayer.getSize())
   #TODO Adjust grid to selection
   envelope=store.getEnvelope()
   infX = envelope.getLowerCorner().getX()-deltaX
@@ -39,6 +37,8 @@ def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection
   self.setRangeOfValues(0,int(numero_filas*numero_columnas))
   self.setProgressText("Processing " + str(int(numero_filas*numero_columnas)) + " features")
   n = 0
+  #expandedFeatureType = createGroupyByFeatureType(store)
+
   for i in range(0, int(numero_columnas)+1):
     for j in range(0, int(numero_filas)+1):
       if self.isCanceled():
@@ -69,18 +69,74 @@ def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection
         fs = store.getSelection()
     
       #fs = store.getFeatureSet(fq)
+      #allParams = getInitAllParams(store)
       count = 0
       for k in fs:
           if k.getDefaultGeometry().intersects(square):
               count += 1
+              #getAllValuesForExpression(allParams)
       if addEmptyGrids==False and count==0:
         continue
       newFeature = output.createNewFeature()
       newFeature["ID"]=id_
       newFeature["GEOMETRY"]=square
       newFeature["COUNT"]=count
-      value = 0
-
-      newFeature["VALUE"]=value
+      newFeature["PERC"]= (count/totalSize)*100
+      newFeature["TOTAL"]=totalSize
+      #value = 0
+      #newFeature["VALUE"]=value
       output.insert(newFeature)
       id_+=1
+
+def main(*args):
+  layer = gvsig.currentLayer().getFeatureStore()
+  allParams = {}
+  store = layer.getFeatureStore()
+  ft = createGroupyByFeatureType(store)
+  print "Final: ", ft
+
+def createGroupyByFeatureType(store):
+  ft = store.getDefaultFeatureType()
+  newft = gvsig.createFeatureType(ft)
+  for attr in ft.getAttributeDescriptors():
+    dataTypeName = attr.getDataTypeName()
+    name = attr.getName()
+    size = attr.getSize()+5
+    if dataTypeName=="String":
+      pass
+    elif dataTypeName=="Double" or dataTypeName=="Long":
+      appendNumericField(name, "Double", size, newft)
+    elif dataTypeName=="Integer":
+      appendNumericField(name, dataTypeName, size, newft)
+    elif dataTypeName=="Date":
+      pass
+    elif dataTypeName=="GEOMETRY":
+      pass
+    else:
+      print "Not supported: ", dataTypeName
+    print dataTypeName
+    name = attr.getName()
+    typefield = attr.getType()
+  return newft
+
+def appendNumericField(name, dataTypeName, size, newft):
+  prefix = ["S","F","A","X","N"]
+  print "name:", name
+  if len(name)==10:
+    name = name[:-1]
+  for p in prefix:
+    newName = p+name
+    print "newName:", newName
+    newft.append(newName, dataTypeName, size)
+  
+def setInitAllParams(store):
+  allParams = {}
+  ft = store.getDefaultFeatureType()
+  for attr in ft.getAttributeDescriptors():
+    name = attr.getName()
+    typefield = attr.getType()
+    allParams[name] = 0
+    print name,typefield
+  
+  
+  

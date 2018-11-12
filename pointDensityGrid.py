@@ -29,7 +29,9 @@ def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids,
   newSchema = gvsig.createFeatureType()
   newSchema.append("ID", "INTEGER", 10)
   newSchema.append("COUNT", "INTEGER", 20)
-  newSchema.append("VALUE", "DOUBLE", 20)
+  newSchema.append("TOTAL", "INTEGER", 20)
+  #newSchema.append("VALUE", "DOUBLE", 20)
+  newSchema.append("PERC", "DOUBLE", 5)
   newSchema.append("GEOMETRY", "GEOMETRY")
   newSchema.get("GEOMETRY").setGeometryType(geom.POLYGON, geom.D2)
   ### Capa 2: Aprovechando las opciones de la Toolbox
