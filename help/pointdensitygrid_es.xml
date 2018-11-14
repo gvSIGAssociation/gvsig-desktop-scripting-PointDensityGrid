@@ -25,7 +25,13 @@
 
 -->
 	<help>
-		<element name="DESCRIPTION" text="Geoproceso para la transformacion de campos tipo Integer con fechas en forma yyyymmdd para su transformacion a un campo nuevo de tipo Date. Valores default como por ejemplo '99999999' puedes reemplazarse por una fecha introducida en el formato anterior. Por ejemplo: '19991231'" description="Descripcion" type="0">
+		<element name="DESCRIPTION" text="Geoproceso para la creacion de una rejilla en toda region de los datos de entrada. Ademas de la rejilla se realizara un enlace espacial en la que contara cuantos elementos contiene cada elemento de la rejilla. Se añadiran campos referentes a 'COUNT' valor total de entidades contenidas, 'TOTAL' sumatorio de todas las entidades analizadas,'PERC' porcentaje de entidades en este elemento de la rejilla en relacion con el de toda la capa analizada." description="Descripcion" type="0">
+                <image description="Grid Hexagonal Horizontal" file="pointdensitygridhexhorizontal.png">
+		</image>                
+                <image description="Grid Hexagonal Vertical" file="pointdensitygridhexvertical.png">
+		</image>
+                <image description="Grid cuadrado" file="pointdensitygridsquare.png">
+		</image>
 		</element>
 		<element name="ADDITIONAL_INFO" text="" description="Informacion adicional" type="0">
 		</element>
@@ -35,13 +41,19 @@
 		</element>
 		<element name="USER_NOTES" text="" description="Notas de usuario" type="0">
 		</element>
-		<element name="LAYER" text="" description="Capa de entrada" type="3">
+		<element name="LAYER" text="Capa de entrada de tipo puntual" description="" type="3">
 		</element>
-		<element name="CHECK" text="" description="Geometrias seleccionadas" type="3">
+		<element name="DISTANCEGRID" text="Distancia del lado del elemento seleccionado en las unidades de la proyeccion" description="" type="3">
+		</element>
+                <element name="GRIDTYPE" text="Tipo de grid seleccionado: hexagonal (vertical o horizontal) o cuadricula" description="" type="3">
+		</element>
+                <element name="ADDEMPTYGRID" text="Agregar los elementos del grid que no contengan ningun elemento contenido" description="" type="3">
+		</element>
+                <element name="EXPRESSION" text="Expresion de filtrado en los datos de entrada" description="" type="3">
 		</element>
 		<element name="OUTPUT_DESCRIPTION" text="" description="Descripcion" type="2">
 		</element>
-		<element name="RESULT" text="" description="Date Result" type="2">
+		<element name="RESULT_POLYGON" text="Capa resultado en forma de grid" description="Date Result" type="2">
 		</element>
 	</help>
 <?xml version='1.0' encoding='ISO-8859-1' standalone='yes' ?>
