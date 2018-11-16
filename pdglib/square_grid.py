@@ -4,21 +4,31 @@ import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
 
-def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection):
-  deltaX=lado*0.2
-  deltaY=lado*0.2
-
+def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection, envelope):
+  deltaX= lado*0.2
+  deltaY= lado*0.2
+  print "pointDensityGrid_square"
+  ###
+  ### Selection
+  ###
   if store.getSelection().getSize()==0:
     featuresLayer = store.getFeatureSet()
   else:
     featuresLayer = store.getSelection()
   totalSize = float(featuresLayer.getSize())
   #TODO Adjust grid to selection
-  envelope=store.getEnvelope()
-  infX = envelope.getLowerCorner().getX()-deltaX
-  infY = envelope.getLowerCorner().getY()-deltaY
-  supX = envelope.getUpperCorner().getX()+deltaX
-  supY = envelope.getUpperCorner().getY()+deltaY
+
+  ###
+  ### ENVELOPE
+  ###
+  #env = self.getAnalysisExtent().getAsJTSGeometry().getEnvelopeInternal()
+  if envelope==None:
+    envelope=store.getEnvelope()
+
+  infX = envelope.getMinX()-deltaX
+  infY = envelope.getMinY()-deltaY
+  supX = envelope.getMaxX()+deltaX
+  supY = envelope.getMaxY()+deltaY
 
   dX = supX - infX
   dY = supY - infY

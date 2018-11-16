@@ -10,6 +10,7 @@ from gvsig import commonsdialog
 from gvsig.libs.toolbox import ToolboxProcess, NUMERICAL_VALUE_DOUBLE,SHAPE_TYPE_POLYGON,NUMERICAL_VALUE_INTEGER,SHAPE_TYPE_POLYGON, SHAPE_TYPE_POINT
 from es.unex.sextante.gui import core
 from es.unex.sextante.gui.core import NameAndIcon
+from es.unex.sextante.additionalInfo import AdditionalInfoVectorLayer
 
 from es.unex.sextante.gui.core import SextanteGUI
 from org.gvsig.geoprocess.lib.api import GeoProcessLocator
@@ -52,9 +53,11 @@ class PointDensityGridGeoprocess(ToolboxProcess):
       i18nManager = ToolsLocator.getI18nManager()
       self.setName(i18nManager.getTranslation("_Point_density_grid_geoprocess_name"))
       self.setGroup(i18nManager.getTranslation("_Criminology_group"))
-      self.setUserCanDefineAnalysisExtent(False)
+      self.setUserCanDefineAnalysisExtent(True)
+      #self.setRecalculateForCell(False)
       params = self.getParameters()
       params.addInputVectorLayer("LAYER",i18nManager.getTranslation("_Input_layer"), SHAPE_TYPE_POINT, True)
+      params.addInputVectorLayer("LAYER_ENVELOPE",i18nManager.getTranslation("_Input_layer_Envelope"), AdditionalInfoVectorLayer.SHAPE_TYPE_ANY, True)
       params.addNumericalValue("DISTANCEGRID", i18nManager.getTranslation("_Grid_distance"),0, NUMERICAL_VALUE_DOUBLE)
       params.addSelection("GRIDTYPE", i18nManager.getTranslation("_Grid_type"), 
                           [GRID_HEXAGON_HORIZONTAL, 
@@ -68,6 +71,7 @@ class PointDensityGridGeoprocess(ToolboxProcess):
         features=None
         params = self.getParameters()
         sextantelayer = params.getParameterValueAsVectorLayer("LAYER")
+        envelope = params.getParameterValueAsVectorLayer("LAYER_ENVELOPE")
         distancegrid = params.getParameterValueAsDouble("DISTANCEGRID")
         gridType = params.getParameterValueAsString("GRIDTYPE")
         addEmptyGrids = params.getParameterValueAsBoolean("ADDEMPTYGRID")
@@ -75,8 +79,10 @@ class PointDensityGridGeoprocess(ToolboxProcess):
 
         store = sextantelayer.getFeatureStore()
         projection = sextantelayer.getCRS()
+        
+        envelope = envelope.getFullExtent() # Rectangle2D
 
-        pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection)
+        pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope)
         print "Proceso terminado %s" % self.getCommandLineName()
         return True
         

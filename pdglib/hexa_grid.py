@@ -4,7 +4,7 @@ import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
 
-def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, projection):
+def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, projection, envelope):
   deltaX=lado*0.0000001
   deltaY=lado*0.0000001
 
@@ -13,12 +13,17 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
   else:
     featuresLayer = store.getSelection()
   totalSize = float(featuresLayer.getSize())
-  envelope=store.getEnvelope()
-  infX = envelope.getLowerCorner().getX()-deltaX
-  infY = envelope.getLowerCorner().getY()-deltaY
-  supX = envelope.getUpperCorner().getX()+deltaX
-  supY = envelope.getUpperCorner().getY()+deltaY
-
+  if envelope==None:
+      envelope=store.getEnvelope()
+  #infX = envelope.getLowerCorner().getX()-deltaX
+  #infY = envelope.getLowerCorner().getY()-deltaY
+  #supX = envelope.getUpperCorner().getX()+deltaX
+  #supY = envelope.getUpperCorner().getY()+deltaY
+  infX = envelope.getMinX()-deltaX
+  infY = envelope.getMinY()-deltaY
+  supX = envelope.getMaxX()+deltaX
+  supY = envelope.getMaxY()+deltaY
+  
   dX = supX - infX
   dY = supY - infY
   
