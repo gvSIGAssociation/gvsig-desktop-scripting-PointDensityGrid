@@ -4,7 +4,7 @@ import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
 
-def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, projection, envelope):
+def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, projection, envelope, filterExpression):
   deltaX=lado*0.0000001
   deltaY=lado*0.0000001
 

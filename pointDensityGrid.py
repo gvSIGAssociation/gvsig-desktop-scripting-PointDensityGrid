@@ -23,7 +23,7 @@ def main(*args):
   projection = sextantelayer.getProjection()
   pointDensityGridCreation(None, store, gridType, distancegrid, addEmptyGrids, projection)
 
-def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope):
+def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope, filterExpression):
   #features = store.features()
 
   newSchema = gvsig.createFeatureType()
@@ -48,11 +48,11 @@ def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids,
 
   if gridType==GRID_HEXAGON_HORIZONTAL:
     rotate = False
-    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope)
+    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope, filterExpression)
   elif gridType==GRID_HEXAGON_VERTICAL:
     rotate = True
-    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope)
+    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope, filterExpression)
   elif gridType==GRID_SQUARE:
     #pointDensityGrid_square(distancegrid,distancegrid,store)
-    pointDensityGrid_square(self, distancegrid, store, output_store, addEmptyGrids, projection, envelope)
+    pointDensityGrid_square(self, distancegrid, store, output_store, addEmptyGrids, projection, envelope, filterExpression)
   output_store.finishEditing()

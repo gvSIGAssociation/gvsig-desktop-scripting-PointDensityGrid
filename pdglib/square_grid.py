@@ -4,7 +4,7 @@ import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
 
-def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection, envelope):
+def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection, envelope, filterExpression):
   deltaX= lado*0.2
   deltaY= lado*0.2
   print "pointDensityGrid_square"
@@ -12,7 +12,10 @@ def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection
   ### Selection
   ###
   if store.getSelection().getSize()==0:
-    featuresLayer = store.getFeatureSet()
+    if filterExpression!='':
+      featuresLayer = store.getFeatureSet(filterExpression)
+    else:
+      featuresLayer = store.getFeatureSet()
   else:
     featuresLayer = store.getSelection()
   totalSize = float(featuresLayer.getSize())

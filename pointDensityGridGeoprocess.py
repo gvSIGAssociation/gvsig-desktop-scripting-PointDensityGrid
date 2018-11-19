@@ -75,14 +75,14 @@ class PointDensityGridGeoprocess(ToolboxProcess):
         distancegrid = params.getParameterValueAsDouble("DISTANCEGRID")
         gridType = params.getParameterValueAsString("GRIDTYPE")
         addEmptyGrids = params.getParameterValueAsBoolean("ADDEMPTYGRID")
-        valueExpression = params.getParameterValueAsString("EXPRESSION")
+        filterExpression = params.getParameterValueAsString("EXPRESSION")
 
         store = sextantelayer.getFeatureStore()
         projection = sextantelayer.getCRS()
         
         envelope = envelope.getFullExtent() # Rectangle2D
 
-        pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope)
+        pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope, filterExpression)
         print "Proceso terminado %s" % self.getCommandLineName()
         return True
         
