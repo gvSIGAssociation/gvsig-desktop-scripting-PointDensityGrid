@@ -54,36 +54,36 @@ class PointDensityGridGeoprocess(ToolboxProcess):
       self.setName(i18nManager.getTranslation("_Point_density_grid_geoprocess_name"))
       self.setGroup(i18nManager.getTranslation("_Criminology_group"))
       self.setUserCanDefineAnalysisExtent(True)
-      #self.setRecalculateForCell(False)
+      self.setRecalculateForCell(False)
       params = self.getParameters()
       params.addInputVectorLayer("LAYER",i18nManager.getTranslation("_Input_layer"), SHAPE_TYPE_POINT, True)
-      params.addInputVectorLayer("LAYER_ENVELOPE",i18nManager.getTranslation("_Input_layer_Envelope"), AdditionalInfoVectorLayer.SHAPE_TYPE_ANY, True)
+      #params.addInputVectorLayer("LAYER_ENVELOPE",i18nManager.getTranslation("_Input_layer_Envelope"), AdditionalInfoVectorLayer.SHAPE_TYPE_ANY, True)
       params.addNumericalValue("DISTANCEGRID", i18nManager.getTranslation("_Grid_distance"),0, NUMERICAL_VALUE_DOUBLE)
       params.addSelection("GRIDTYPE", i18nManager.getTranslation("_Grid_type"), 
                           [GRID_HEXAGON_HORIZONTAL, 
                            GRID_HEXAGON_VERTICAL,
                            GRID_SQUARE]);
       params.addBoolean("ADDEMPTYGRID", i18nManager.getTranslation("_Add_empty_grids"), True)
-      params.addString("EXPRESSION", i18nManager.getTranslation("_Value_expression"))
+      #params.addString("EXPRESSION", i18nManager.getTranslation("_Value_expression"))
+      params.addTableFilter("EXPRESSION", i18nManager.getTranslation("_Value_expression"), "LAYER", True)
       self.addOutputVectorLayer("RESULT_POLYGON", "DensityGrid", SHAPE_TYPE_POLYGON)
       
   def processAlgorithm(self):
         features=None
         params = self.getParameters()
         sextantelayer = params.getParameterValueAsVectorLayer("LAYER")
-        envelope = params.getParameterValueAsVectorLayer("LAYER_ENVELOPE")
         distancegrid = params.getParameterValueAsDouble("DISTANCEGRID")
         gridType = params.getParameterValueAsString("GRIDTYPE")
         addEmptyGrids = params.getParameterValueAsBoolean("ADDEMPTYGRID")
-        filterExpression = params.getParameterValueAsString("EXPRESSION")
+        filterExpression = params.getParameterValueAsObject("EXPRESSION")
 
         store = sextantelayer.getFeatureStore()
         projection = sextantelayer.getCRS()
         
-        envelope = envelope.getFullExtent() # Rectangle2D
-
+        envelope = self.getAnalysisExtent()
+        envelope = envelope.getAsRectangle2D()#envelope.getFullExtent() # Rectangle2D
         pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope, filterExpression)
-        print "Proceso terminado %s" % self.getCommandLineName()
+
         return True
         
 def main(*args):

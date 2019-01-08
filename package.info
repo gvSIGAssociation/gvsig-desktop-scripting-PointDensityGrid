@@ -1,5 +1,5 @@
 #
-#Wed Sep 26 18:39:36 CEST 2018
+#Mon Dec 03 14:58:10 CET 2018
 owner=
 code=PointDensityGrid
 java-version=j1_7
@@ -17,5 +17,5 @@ categories=
 description=
 owner-url=
 buildNumber=0
-gvSIG-version=2.4.0
+gvSIG-version=2.5.0
 name=PointDensityGrid

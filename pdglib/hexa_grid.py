@@ -3,11 +3,30 @@
 import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
+from org.gvsig.fmap.dal import DALLocator
 
+def getFeatureSetForGeoprocess(store, filterExpression, spatialEvaluator=None):
+  if filterExpression.getPhrase()=="": #org.gvsig.expressionevaluator.Expression
+    if store.getSelection().getSize()==0:
+      fq = store.createFeatureQuery()
+      if spatialEvaluator!=None:
+        fq.addFilter(spatialEvaluator)
+      featuresLayer = store.getFeatureSet(fq)
+    else:
+      featuresLayer = store.getSelection()
+  else:
+    evaluator = DALLocator.getDataManager().createExpresion(filterExpression)
+    fq = store.createFeatureQuery()
+    fq.addFilter(evaluator)
+    if spatialEvaluator!=None:
+      fq.addFilter(spatialEvaluator)
+    fq.retrievesAllAttributes()
+    featuresLayer = store.getFeatureSet(fq)
+  return featuresLayer
+  
 def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, projection, envelope, filterExpression):
   deltaX=lado*0.0000001
   deltaY=lado*0.0000001
-
   if store.getSelection().getSize()==0:
     featuresLayer = store.getFeatureSet()
   else:
@@ -60,13 +79,13 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
   
         #contar los puntos dentro de cada rejilla
         evaluator = sef.intersects(hexa, projection, store)
-        fq.setFilter(evaluator)
-        if store.getSelection().getSize()==0:
-          fs = store.getFeatureSet(fq)
-        else:
-          fs = store.getSelection()
-      
-        #fs = store.getFeatureSet(fq)
+        #fq.setFilter(evaluator)
+        #if store.getSelection().getSize()==0:
+        #  fs = store.getFeatureSet(fq)
+        #else:
+        #  fs = store.getSelection()
+        fs = getFeatureSetForGeoprocess(store, filterExpression, evaluator)
+        
         count = 0
         for k in fs:
             if k.getDefaultGeometry().intersects(hexa):
@@ -119,14 +138,15 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
               p5 = geom.createPoint(geom.D2, cX+lado, cY)
               p6 = geom.createPoint(geom.D2, cX+increX, cY-increY)
               hexa = geom.createPolygon(vertexes=[p1,p2,p3,p4,p5,p6,p1])
+              
               evaluator = sef.intersects(hexa, projection, store)
               fq.setFilter(evaluator)
               if store.getSelection().getSize()==0:
                 fs = store.getFeatureSet(fq)
               else:
                 fs = store.getSelection()
-            
-              #fs = store.getFeatureSet(fq)
+              #fs = getFeatureSetForGeoprocess(store, filterExpression)
+              
               count = 0
               for k in fs:
                   if k.getDefaultGeometry().intersects(hexa):

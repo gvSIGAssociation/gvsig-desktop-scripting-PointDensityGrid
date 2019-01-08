@@ -10,18 +10,23 @@ GRID_HEXAGON_HORIZONTAL = "Grid hexagon horizontal"
 GRID_HEXAGON_VERTICAL = "Grid hexagon vertical"
 GRID_SQUARE = "Grid square"
 
+from org.gvsig.fmap.dal import DALLocator
 
 def main(*args):
 
   sextantelayer = gvsig.currentLayer()
+  envelope = sextantelayer.getFullEnvelope()
   distancegrid = 0.1
   gridType = GRID_HEXAGON_HORIZONTAL
   addEmptyGrids = True
-  valueExpression = ""
+  dm = DALLocator.getDataManager()
+  i="KY_CD=344"
+  valueExpression = dm.createExpresion(i)
 
   store = sextantelayer.getFeatureStore()
   projection = sextantelayer.getProjection()
-  pointDensityGridCreation(None, store, gridType, distancegrid, addEmptyGrids, projection)
+  
+  pointDensityGridCreation(None, store, gridType, distancegrid, addEmptyGrids, projection, envelope, valueExpression)
 
 def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope, filterExpression):
   #features = store.features()
