@@ -4,27 +4,56 @@ import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
 from org.gvsig.fmap.dal import DALLocator
+from org.gvsig.expressionevaluator import ExpressionEvaluatorLocator
+from gvsig import logger
+from gvsig import LOGGER_INFO
+import time
 
-def getFeatureSetForGeoprocess(store, filterExpression, spatialEvaluator=None):
+def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, geomFieldName="GEOMETRY"):
   if filterExpression.getPhrase()=="": #org.gvsig.expressionevaluator.Expression
     if store.getSelection().getSize()==0:
+      builder = ExpressionEvaluatorLocator.getManager().createExpressionBuilder()
+      expr1 = builder.ST_Intersects(
+            builder.geometry(spatialGeometry),
+            builder.column(geomFieldName)
+          ).toString()
+      cloneExpression = filterExpression.clone()
+      cloneExpression.setPhrase(expr1)
+      evaluator = DALLocator.getDataManager().createExpresion(cloneExpression)
+      """
+      exp = ExpressionEvaluatorLocator.getManager().createExpression()
+      exp.setPhrase(expr1)
+      evaluator = DALLocator.getDataManager().createExpresion(exp)
+      """
       fq = store.createFeatureQuery()
-      if spatialEvaluator!=None:
-        fq.addFilter(spatialEvaluator)
+      fq.addFilter(evaluator)
+      #fq.retrievesAllAttributes()
+      #fq.addAttributeName("Id")
       featuresLayer = store.getFeatureSet(fq)
+      return featuresLayer
     else:
       featuresLayer = store.getSelection()
+      return featuresLayer
   else:
-    evaluator = DALLocator.getDataManager().createExpresion(filterExpression)
+    builder = ExpressionEvaluatorLocator.getManager().createExpressionBuilder()
+    expr2 = builder.and(
+        builder.custom(filterExpression.getPhrase()),
+        builder.ST_Intersects(
+          builder.geometry(spatialGeometry),
+          builder.column("GEOMETRY")
+        )
+    ).toString()
+    #logger("Expression 2:"+expr2, LOGGER_INFO)
+    cloneExpression = filterExpression.clone()
+    cloneExpression.setPhrase(expr2)
+    evaluator = DALLocator.getDataManager().createExpresion(cloneExpression)
     fq = store.createFeatureQuery()
     fq.addFilter(evaluator)
-    if spatialEvaluator!=None:
-      fq.addFilter(spatialEvaluator)
-    fq.retrievesAllAttributes()
+    #fq.retrievesAllAttributes()
     featuresLayer = store.getFeatureSet(fq)
-  return featuresLayer
+    return featuresLayer
   
-def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, projection, envelope, filterExpression):
+def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, projection, envelope, filterExpression, geomName):
   deltaX=lado*0.0000001
   deltaY=lado*0.0000001
   if store.getSelection().getSize()==0:
@@ -48,10 +77,12 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
   
   id_=0
   n = 0
-  sef = SpatialEvaluatorsFactory.getInstance()
+  #sef = SpatialEvaluatorsFactory.getInstance()
   fq = store.createFeatureQuery()
 
   if rotate: #
+    start = time.time()
+    #print "Time..: ", start - time.time()
     increY = lado*0.5
     increX = (pow((pow(lado,2)-pow(lado*0.5,2)),0.5))
     numero_filas=int(dY/(lado*1.5))+2
@@ -76,20 +107,14 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
         p5 = geom.createPoint(geom.D2, cX+increX, cY-increY)
         p6 = geom.createPoint(geom.D2, cX, cY-lado)
         hexa = geom.createPolygon(vertexes=[p1,p2,p3,p4,p5,p6,p1])
+        hexa.setProjection(projection)
   
-        #contar los puntos dentro de cada rejilla
-        evaluator = sef.intersects(hexa, projection, store)
-        #fq.setFilter(evaluator)
-        #if store.getSelection().getSize()==0:
-        #  fs = store.getFeatureSet(fq)
-        #else:
-        #  fs = store.getSelection()
-        fs = getFeatureSetForGeoprocess(store, filterExpression, evaluator)
+        fs = getFeatureSetForGeoprocess(store, filterExpression, hexa, geomName)
+
+        #start = time.time()
+        count= fs.getSize()
+        #print "Time..after: ", time.time() -  start
         
-        count = 0
-        for k in fs:
-            if k.getDefaultGeometry().intersects(hexa):
-                count += 1
         if addEmptyGrids==False and count==0:
           continue
         newFeature = output.createNewFeature()
@@ -101,6 +126,7 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
 
         output.insert(newFeature)
         id_+=1
+        
   else:
       increX = lado*0.5
       increY = (pow((pow(lado,2)-pow(lado*0.5,2)),0.5))
@@ -138,14 +164,9 @@ def pointDensityGrid_hexa(self, lado, store, output, rotate, addEmptyGrids, proj
               p5 = geom.createPoint(geom.D2, cX+lado, cY)
               p6 = geom.createPoint(geom.D2, cX+increX, cY-increY)
               hexa = geom.createPolygon(vertexes=[p1,p2,p3,p4,p5,p6,p1])
+              hexa.setProjection(projection)
               
-              evaluator = sef.intersects(hexa, projection, store)
-              fq.setFilter(evaluator)
-              if store.getSelection().getSize()==0:
-                fs = store.getFeatureSet(fq)
-              else:
-                fs = store.getSelection()
-              #fs = getFeatureSetForGeoprocess(store, filterExpression)
+              fs = getFeatureSetForGeoprocess(store, filterExpression, hexa, geomName)
               
               count = 0
               for k in fs:

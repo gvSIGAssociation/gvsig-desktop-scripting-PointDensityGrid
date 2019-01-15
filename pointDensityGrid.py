@@ -28,7 +28,7 @@ def main(*args):
   
   pointDensityGridCreation(None, store, gridType, distancegrid, addEmptyGrids, projection, envelope, valueExpression)
 
-def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope, filterExpression):
+def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope, filterExpression, geomFieldName):
   #features = store.features()
 
   newSchema = gvsig.createFeatureType()
@@ -53,11 +53,11 @@ def pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids,
 
   if gridType==GRID_HEXAGON_HORIZONTAL:
     rotate = False
-    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope, filterExpression)
+    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope, filterExpression, geomFieldName)
   elif gridType==GRID_HEXAGON_VERTICAL:
     rotate = True
-    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope, filterExpression)
+    pointDensityGrid_hexa(self, distancegrid, store, output_store, rotate, addEmptyGrids, projection, envelope, filterExpression, geomFieldName)
   elif gridType==GRID_SQUARE:
     #pointDensityGrid_square(distancegrid,distancegrid,store)
-    pointDensityGrid_square(self, distancegrid, store, output_store, addEmptyGrids, projection, envelope, filterExpression)
+    pointDensityGrid_square(self, distancegrid, store, output_store, addEmptyGrids, projection, envelope, filterExpression, geomFieldName)
   output_store.finishEditing()

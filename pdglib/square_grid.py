@@ -3,8 +3,9 @@
 import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
+from hexa_grid import getFeatureSetForGeoprocess
 
-def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection, envelope, filterExpression):
+def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection, envelope, filterExpression, geomFieldName):
   deltaX= lado*0.2
   deltaY= lado*0.2
   print "pointDensityGrid_square"
@@ -12,10 +13,7 @@ def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection
   ### Selection
   ###
   if store.getSelection().getSize()==0:
-    if filterExpression!='':
-      featuresLayer = store.getFeatureSet(filterExpression)
-    else:
-      featuresLayer = store.getFeatureSet()
+    featuresLayer = store.getFeatureSet()
   else:
     featuresLayer = store.getSelection()
   totalSize = float(featuresLayer.getSize())
@@ -44,9 +42,6 @@ def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection
   numero_filas=dY/lado
   numero_columnas=dX/lado
   
-  sef = SpatialEvaluatorsFactory.getInstance()
-  
-  fq = store.createFeatureQuery()
   self.setRangeOfValues(0,int(numero_filas*numero_columnas))
   self.setProgressText("Processing " + str(int(numero_filas*numero_columnas)) + " features")
   n = 0
@@ -67,27 +62,12 @@ def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection
       p3 = geom.createPoint(geom.D2, cX+increX, cY+increY)
       p4 = geom.createPoint(geom.D2, cX, cY+increY)
       square = geom.createPolygon(vertexes=[p1,p2,p3,p4,p1])
-      #contar los puntos dentro de cada rejilla
-      #evaluator = sef.intersects(square, projection, store)
-      #TODO: Try to use selection
-      featureType = store.getDefaultFeatureType()
-      geomName = featureType.getDefaultGeometryAttributeName()
-      builder = store.createExpressionBuilder()
-      evaluator = sef.intersects(square, projection, featureType,geomName,builder)
-      fq.setFilter(evaluator)
+      square.setProjection(projection)
+      
+      fs = getFeatureSetForGeoprocess(store, filterExpression, square, geomFieldName)
 
-      if store.getSelection().getSize()==0:
-        fs = store.getFeatureSet(fq)
-      else:
-        fs = store.getSelection()
-    
-      #fs = store.getFeatureSet(fq)
-      #allParams = getInitAllParams(store)
-      count = 0
-      for k in fs:
-          if k.getDefaultGeometry().intersects(square):
-              count += 1
-              #getAllValuesForExpression(allParams)
+      count = fs.getSize()
+
       if addEmptyGrids==False and count==0:
         continue
       newFeature = output.createNewFeature()
