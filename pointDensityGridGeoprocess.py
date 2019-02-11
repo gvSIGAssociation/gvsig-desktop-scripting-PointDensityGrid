@@ -65,7 +65,7 @@ class PointDensityGridGeoprocess(ToolboxProcess):
                            GRID_SQUARE]);
       params.addBoolean("ADDEMPTYGRID", i18nManager.getTranslation("_Add_empty_grids"), True)
       #params.addString("EXPRESSION", i18nManager.getTranslation("_Value_expression"))
-      params.addTableFilter("EXPRESSION", i18nManager.getTranslation("_Value_expression"), "LAYER", True)
+      params.addTableFilter("EXPRESSION", i18nManager.getTranslation("_Filter_expression"), "LAYER", True)
       self.addOutputVectorLayer("RESULT_POLYGON", "DensityGrid", SHAPE_TYPE_POLYGON)
       
   def processAlgorithm(self):
