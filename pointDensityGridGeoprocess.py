@@ -52,7 +52,7 @@ class PointDensityGridGeoprocess(ToolboxProcess):
   def defineCharacteristics(self):
       i18nManager = ToolsLocator.getI18nManager()
       self.setName(i18nManager.getTranslation("_Point_density_grid_geoprocess_name"))
-      self.setGroup(i18nManager.getTranslation("_Criminology_group"))
+      self.setGroup(i18nManager.getTranslation("_Data_Analysis"))
       self.setUserCanDefineAnalysisExtent(True)
       self.setRecalculateForCell(False)
       params = self.getParameters()

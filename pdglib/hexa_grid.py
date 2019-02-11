@@ -19,7 +19,7 @@ def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, ge
           ).toString()
       cloneExpression = filterExpression.clone()
       cloneExpression.setPhrase(expr1)
-      evaluator = DALLocator.getDataManager().createExpresion(cloneExpression)
+      evaluator = DALLocator.getDataManager().createFilter(cloneExpression)
       """
       exp = ExpressionEvaluatorLocator.getManager().createExpression()
       exp.setPhrase(expr1)
@@ -46,7 +46,7 @@ def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, ge
     #logger("Expression 2:"+expr2, LOGGER_INFO)
     cloneExpression = filterExpression.clone()
     cloneExpression.setPhrase(expr2)
-    evaluator = DALLocator.getDataManager().createExpresion(cloneExpression)
+    evaluator = DALLocator.getDataManager().createFilter(cloneExpression)
     fq = store.createFeatureQuery()
     fq.addFilter(evaluator)
     #fq.retrievesAllAttributes()
