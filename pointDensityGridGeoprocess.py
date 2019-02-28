@@ -84,6 +84,7 @@ class PointDensityGridGeoprocess(ToolboxProcess):
         envelope = envelope.getAsRectangle2D()#envelope.getFullExtent() # Rectangle2D
         featureType = store.getDefaultFeatureType()
         geomName = featureType.getDefaultGeometryAttributeName()
+
         pointDensityGridCreation(self, store, gridType, distancegrid, addEmptyGrids, projection, envelope, filterExpression, geomName)
 
         return True
