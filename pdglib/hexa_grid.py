@@ -10,14 +10,16 @@ from gvsig import LOGGER_INFO
 import time
 
 def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, geomFieldName="GEOMETRY"):
-  if filterExpression.getPhrase()=="": #org.gvsig.expressionevaluator.Expression
+  if filterExpression==None: #.getPhrase()=="": #org.gvsig.expressionevaluator.Expression
     if store.getSelection().getSize()==0:
       builder = ExpressionEvaluatorLocator.getManager().createExpressionBuilder()
       expr1 = builder.ST_Intersects(
             builder.geometry(spatialGeometry),
             builder.column(geomFieldName)
           ).toString()
-      cloneExpression = filterExpression.clone()
+      
+      #cloneExpression = filterExpression.clone()
+      cloneExpression = ExpressionEvaluatorLocator.getManager().createExpression()
       cloneExpression.setPhrase(expr1)
       evaluator = DALLocator.getDataManager().createFilter(cloneExpression)
       """
