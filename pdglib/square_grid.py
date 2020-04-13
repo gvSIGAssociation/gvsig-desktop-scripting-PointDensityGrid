@@ -8,7 +8,6 @@ from hexa_grid import getFeatureSetForGeoprocess
 def pointDensityGrid_square(self, lado, store, output, addEmptyGrids, projection, envelope, filterExpression, geomFieldName):
   deltaX= lado*0.2
   deltaY= lado*0.2
-  print "pointDensityGrid_square"
   ###
   ### Selection
   ###
