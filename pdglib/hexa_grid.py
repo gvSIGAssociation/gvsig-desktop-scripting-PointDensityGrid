@@ -3,16 +3,17 @@
 import gvsig
 from gvsig import geom
 from org.gvsig.fmap.mapcontext.layers.vectorial import SpatialEvaluatorsFactory
-from org.gvsig.fmap.dal import DALLocator
+from org.gvsig.expressionevaluator import GeometryExpressionEvaluatorLocator
 from org.gvsig.expressionevaluator import ExpressionEvaluatorLocator
 from gvsig import logger
+from org.gvsig.fmap.dal import DALLocator
 from gvsig import LOGGER_INFO
 import time
 
 def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, geomFieldName="GEOMETRY"):
   if filterExpression==None: #.getPhrase()=="": #org.gvsig.expressionevaluator.Expression
     if store.getSelection().getSize()==0:
-      builder = ExpressionEvaluatorLocator.getManager().createExpressionBuilder()
+      builder = GeometryExpressionEvaluatorLocator.getGeometryExpressionEvaluatorManager().createExpressionBuilder()
       expr1 = builder.ST_Intersects(
             builder.geometry(spatialGeometry),
             builder.column(geomFieldName)
@@ -28,7 +29,7 @@ def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, ge
       evaluator = DALLocator.getDataManager().createExpresion(exp)
       """
       fq = store.createFeatureQuery()
-      fq.addFilter(evaluator)
+      fq.addFilter(cloneExpression)
       #fq.retrievesAllAttributes()
       #fq.addAttributeName("Id")
       featuresLayer = store.getFeatureSet(fq)
@@ -37,7 +38,7 @@ def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, ge
       featuresLayer = store.getSelection()
       return featuresLayer
   else:
-    builder = ExpressionEvaluatorLocator.getManager().createExpressionBuilder()
+    builder = GeometryExpressionEvaluatorLocator.getGeometryExpressionEvaluatorManager().createExpressionBuilder()
     expr2 = builder.and(
         builder.custom(filterExpression.getPhrase()),
         builder.ST_Intersects(
@@ -45,12 +46,10 @@ def getFeatureSetForGeoprocess(store, filterExpression, spatialGeometry=None, ge
           builder.column("GEOMETRY")
         )
     ).toString()
-    #logger("Expression 2:"+expr2, LOGGER_INFO)
     cloneExpression = filterExpression.clone()
     cloneExpression.setPhrase(expr2)
-    evaluator = DALLocator.getDataManager().createFilter(cloneExpression)
     fq = store.createFeatureQuery()
-    fq.addFilter(evaluator)
+    fq.addFilter(cloneExpression)
     #fq.retrievesAllAttributes()
     featuresLayer = store.getFeatureSet(fq)
     return featuresLayer
